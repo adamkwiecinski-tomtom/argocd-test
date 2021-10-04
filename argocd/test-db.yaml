@@ -30,7 +30,7 @@ spec:
             psql -U postgres -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
             psql -U postgres -c 'CREATE EXTENSION IF NOT EXISTS hstore;'
   destination:
-    namespace: osm-conflation-dev
+    namespace: test-db
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:
