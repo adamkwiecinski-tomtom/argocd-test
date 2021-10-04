@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: test-db
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    targetRevision: 10.3.17
+    chart: postgresql
+    helm:
+      version: v3
+      values: |
+        image:
+          tag: 13.4.0-debian-10-r13
+        postgresqlPassword: postgres
+        persistence:
+          size: 1000Gi
+        resources:
+          requests:
+            memory: 4Gi
+            cpu: 2000m
+        service:
+          type: NodePort
+        initdbScripts:
+          install_extensions.sh: |
+            #!/bin/bash
+            export PGPASSWORD=$POSTGRESQL_PASSWORD
+            psql -U postgres -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+            psql -U postgres -c 'CREATE EXTENSION IF NOT EXISTS hstore;'
+  destination:
+    namespace: osm-conflation-dev
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
